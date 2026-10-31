@@ -14,6 +14,13 @@ htmlcov/
 .idea/
 .vscode/
 
+# Output-Files
+output/*.xml
+
+# Erzeugte XML-Dateien (Ordner bleibt per .gitkeep erhalten)
+output/*
+!output/.gitkeep
+
 # Word-Temporärdateien
 ~$*.docx
 
