@@ -82,3 +82,7 @@ Regeln:
 - **Formatierung** (fett, kursiv, unterstrichen, durchgestrichen, hoch-/tiefgestellt) wird zu `<b>`, `<i>`, `<u>`, `<s>`, `<sup>`, `<sub>`.
 - **Tabellen** werden zu `<table>/<row>/<entry>`; die erste Zeile ist `header="true"`. Pro Zelle wird nur der erste Absatz übernommen.
 - **Leere Absätze** werden ignoriert.
+
+---
+
+Dieses Projekt wurde gemeinsam mit Claude Sonnet 5.5 (Anthropic) entwickelt.
