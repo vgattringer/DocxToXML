@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Fließtext mit optionaler Auszeichnung -->
+  <xs:complexType name="inline" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="b"   type="inline"/>
+      <xs:element name="i"   type="inline"/>
+      <xs:element name="u"   type="inline"/>
+      <xs:element name="s"   type="inline"/>
+      <xs:element name="sup" type="inline"/>
+      <xs:element name="sub" type="inline"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="list">
+    <xs:sequence>
+      <xs:element name="li" type="inline" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="table">
+    <xs:sequence>
+      <xs:element name="row" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="entry" type="inline" maxOccurs="unbounded"/>
+          </xs:sequence>
+          <xs:attribute name="header" type="xs:boolean"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Ein Abschnitt beginnt immer mit einem Titel und kann weitere Abschnitte enthalten -->
+  <xs:complexType name="section">
+    <xs:sequence>
+      <xs:element name="title" type="inline"/>
+      <xs:group ref="block" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:group name="block">
+    <xs:choice>
+      <xs:element name="p" type="inline"/>
+      <xs:element name="ul" type="list"/>
+      <xs:element name="ol" type="list"/>
+      <xs:element name="table" type="table"/>
+      <xs:element name="section" type="section"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:element name="document">
+    <xs:complexType>
+      <xs:group ref="block" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
