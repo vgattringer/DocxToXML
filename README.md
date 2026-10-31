@@ -4,20 +4,20 @@ Wandelt Word-Dokumente (`.docx`) in medienneutrales XML um.
 
 ## So erstellst du die XML-Dateien
 
-1. Lege die Word-Dateien in den Ordner **`eingaben`** (im Projektordner).
+1. Lege die Word-Dateien in den Ordner **`input`** (im Projektordner).
 2. Öffne PowerShell im Projektordner.
-3. Führe diesen Befehl aus. Er wandelt **alle** `.docx`-Dateien aus `eingaben` um:
+3. Führe diesen Befehl aus. Er wandelt **alle** `.docx`-Dateien aus `input` um:
 
 ```powershell
-Get-ChildItem eingaben\*.docx | ForEach-Object { .venv\Scripts\python.exe app.py $_.FullName "ausgaben\$($_.BaseName).xml" schema.xsd }
+Get-ChildItem input\*.docx | ForEach-Object { .venv\Scripts\python.exe app.py $_.FullName "output\$($_.BaseName).xml" schema.xsd }
 ```
 
-4. Die fertigen XML-Dateien liegen im Ordner **`ausgaben`** (`test.docx` → `test.xml`).
+4. Die fertigen XML-Dateien liegen im Ordner **`output`** (`test.docx` → `test.xml`).
 
 **Möchtest du nur eine einzige Datei umwandeln?** → Für eine einzelne Datei:
 
 ```powershell
-.venv\Scripts\python.exe app.py eingaben\test.docx ausgaben\test.xml schema.xsd
+.venv\Scripts\python.exe app.py input\test.docx output\test.xml schema.xsd
 ```
 
 Beim ersten Mal in einer neuen Umgebung: `.venv\Scripts\python.exe -m pip install python-docx lxml`

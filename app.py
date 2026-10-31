@@ -1,6 +1,6 @@
 """Einstiegspunkt: Word (.docx) -> medienneutrales XML.
 
-Aufruf: python app.py eingabe.docx ausgabe.xml [schema.xsd]
+Aufruf: python app.py input.docx output.xml [schema.xsd]
 """
 import sys
 
@@ -14,7 +14,7 @@ from xml_validator import validate
 
 def main(args: list[str]) -> None:
     if len(args) < 3:
-        sys.exit("Aufruf: python app.py eingabe.docx ausgabe.xml [schema.xsd]")
+        sys.exit("Aufruf: python app.py input.docx output.xml [schema.xsd]")
     tree = DocxConverter().convert(Document(args[1]))
     valid = validate(tree, args[3]) if len(args) > 3 else None
     etree.ElementTree(tree).write(
