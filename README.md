@@ -1,6 +1,6 @@
 # Docx → XML
 
-Wandelt Word-Dokumente (`.docx`) in medienneutrales XML um.
+Wandelt Word-Dokumente (`.docx`) in medienneutrales XML um. Es handelt sich hier um einen Prototyp.
 
 ## Voraussetzungen
 
