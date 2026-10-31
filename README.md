@@ -85,4 +85,4 @@ Regeln:
 
 ---
 
-Dieses Projekt wurde gemeinsam mit Claude Sonnet 5.5 (Anthropic) entwickelt.
+**_Dieses Projekt wurde gemeinsam mit Claude Sonnet 5.5 (Anthropic) entwickelt._**
