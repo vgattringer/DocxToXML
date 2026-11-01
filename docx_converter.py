@@ -11,10 +11,12 @@ from xml_builder import append_table, fill_inline
 class DocxConverter:
     """Hält den Zustand der Umwandlung (offene Abschnitte, offene Liste)."""
 
-    def __init__(self):
-        self.root = etree.Element("document")
-        self.stack = [(0, self.root)]  # (Ebene, Element) der offenen Abschnitte
-        self.current_list = None       # offene Liste, damit <li> zusammengefasst werden
+    def __init__(self) -> None:
+        self.root: etree._Element = etree.Element("document")
+        # (Ebene, Element) der offenen Abschnitte
+        self.stack: list[tuple[int, etree._Element]] = [(0, self.root)]
+        # offene Liste, damit <li> zusammengefasst werden
+        self.current_list: etree._Element | None = None
 
     @property
     def container(self) -> etree._Element:

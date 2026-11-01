@@ -1,5 +1,6 @@
 """Aufbau des XML-Baums aus Absätzen und Tabellen."""
 from docx.table import Table
+from docx.text.run import Run
 from docx.text.paragraph import Paragraph
 from lxml import etree
 
@@ -12,9 +13,9 @@ def add_text(parent: etree._Element, text: str) -> None:
         parent.text = (parent.text or "") + text
 
 
-def format_tags(run) -> list[str]:
+def format_tags(run: Run) -> list[str]:
     """Liefert die aktiven Formatierungen eines Runs als Tag-Namen (Reihenfolge = Verschachtelung)."""
-    paare: list[tuple[str, bool]] = [
+    paare: list[tuple[str, bool | None]] = [
         ("b", run.bold),
         ("i", run.italic),
         ("u", run.underline),
