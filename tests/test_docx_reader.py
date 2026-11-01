@@ -11,12 +11,12 @@ from docx_reader import heading_level, iter_blocks, list_tag_for
 class IterBlocksTest(unittest.TestCase):
     def test_order_and_types(self) -> None:
         doc = Document()
-        doc.add_paragraph("Eins")
+        doc.add_paragraph("One")
         doc.add_table(rows=1, cols=1)
-        doc.add_paragraph("Zwei")
+        doc.add_paragraph("Two")
         blocks = list(iter_blocks(doc))
         self.assertEqual([type(b) for b in blocks], [Paragraph, Table, Paragraph])
-        self.assertEqual(blocks[2].text, "Zwei")
+        self.assertEqual(blocks[2].text, "Two")
 
     def test_empty_document(self) -> None:
         self.assertEqual(list(iter_blocks(Document())), [])
@@ -35,13 +35,13 @@ class HeadingLevelTest(unittest.TestCase):
 
     def test_heuristic_short_bold_paragraph(self) -> None:
         p = self.doc.add_paragraph()
-        p.add_run("Kurz und fett").bold = True
+        p.add_run("Short and bold").bold = True
         self.assertEqual(heading_level(p), 2)
         self.assertEqual(len(docx_reader.warnings), 1)
 
     def test_heuristic_not_applied_with_sentence_end(self) -> None:
         p = self.doc.add_paragraph()
-        p.add_run("Ein Satz.").bold = True
+        p.add_run("A sentence.").bold = True
         self.assertIsNone(heading_level(p))
 
     def test_heuristic_not_applied_to_long_text(self) -> None:
@@ -51,8 +51,8 @@ class HeadingLevelTest(unittest.TestCase):
 
     def test_heuristic_not_applied_when_partly_bold(self) -> None:
         p = self.doc.add_paragraph()
-        p.add_run("fett").bold = True
-        p.add_run(" normal")
+        p.add_run("bold").bold = True
+        p.add_run(" normal text")
         self.assertIsNone(heading_level(p))
 
     def test_normal_paragraph(self) -> None:

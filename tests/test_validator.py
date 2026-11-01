@@ -24,23 +24,23 @@ class ValidateTest(unittest.TestCase):
             f.write(XSD)
         self.addCleanup(os.remove, self.xsd)
 
-    def test_gueltig(self) -> None:
+    def test_valid(self) -> None:
         root = etree.fromstring("<document><p>x</p></document>")
         self.assertTrue(validate(root, self.xsd))
         self.assertEqual(docx_reader.warnings, [])
 
-    def test_ungueltig_meldet_schemafehler(self) -> None:
+    def test_invalid_reports_schema_error(self) -> None:
         root = etree.fromstring("<document><q/></document>")
         self.assertFalse(validate(root, self.xsd))
         self.assertTrue(docx_reader.warnings)
         self.assertTrue(docx_reader.warnings[0].startswith("Schemafehler Zeile"))
 
-    def test_echtes_schema(self) -> None:
+    def test_real_schema(self) -> None:
         schema = os.path.join(os.path.dirname(__file__), "..", "schema.xsd")
         root = etree.fromstring("<document><section><title>T</title></section></document>")
         self.assertTrue(validate(root, schema))
 
-    def test_echtes_schema_neue_formate(self) -> None:
+    def test_real_schema_new_formats(self) -> None:
         schema = os.path.join(os.path.dirname(__file__), "..", "schema.xsd")
         root = etree.fromstring(
             "<document><p>a <b><u>b</u></b> H<sub>2</sub>O</p></document>")

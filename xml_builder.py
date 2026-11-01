@@ -15,7 +15,7 @@ def add_text(parent: etree._Element, text: str) -> None:
 
 def format_tags(run: Run) -> list[str]:
     """Liefert die aktiven Formatierungen eines Runs als Tag-Namen (Reihenfolge = Verschachtelung)."""
-    paare: list[tuple[str, bool | None]] = [
+    pairs: list[tuple[str, bool | None]] = [
         ("b", run.bold),
         ("i", run.italic),
         ("u", run.underline),
@@ -23,7 +23,7 @@ def format_tags(run: Run) -> list[str]:
         ("sup", run.font.superscript),
         ("sub", run.font.subscript),
     ]
-    return [t for t, aktiv in paare if aktiv]
+    return [t for t, active in pairs if active]
 
 
 def fill_inline(parent: etree._Element, paragraph: Paragraph, plain: bool = False) -> None:
