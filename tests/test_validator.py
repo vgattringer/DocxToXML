@@ -46,5 +46,40 @@ class ValidateTest(unittest.TestCase):
             "<document><p>a <b><u>b</u></b> H<sub>2</sub>O</p></document>")
         self.assertTrue(validate(root, schema))
 
+    def real_schema(self) -> str:
+        return os.path.join(os.path.dirname(__file__), "..", "schema.xsd")
+
+    def test_real_schema_lists_and_tables(self) -> None:
+        root = etree.fromstring(
+            "<document><ul><li>a</li></ul><ol><li>b</li></ol>"
+            "<table><row header=\"true\"><entry>x</entry></row></table></document>")
+        self.assertTrue(validate(root, self.real_schema()))
+
+    def test_real_schema_rejects_unknown_tag(self) -> None:
+        root = etree.fromstring("<document><foo/></document>")
+        self.assertFalse(validate(root, self.real_schema()))
+
+    def test_real_schema_rejects_paragraph_in_table(self) -> None:
+        root = etree.fromstring(
+            "<document><table><row><p>x</p></row></table></document>")
+        self.assertFalse(validate(root, self.real_schema()))
+
+    def test_real_schema_rejects_section_without_title(self) -> None:
+        root = etree.fromstring("<document><section><p>x</p></section></document>")
+        self.assertFalse(validate(root, self.real_schema()))
+
+    def test_error_contains_line_number(self) -> None:
+        root = etree.fromstring("<document>\n<q/>\n</document>")
+        validate(root, self.xsd)
+        self.assertRegex(docx_reader.warnings[0], r"Schemafehler Zeile \d+: ")
+
+    def test_multiple_errors_give_multiple_warnings(self) -> None:
+        root = etree.fromstring(
+            "<document><table><row><p/></row></table>"
+            "<table><row><p/></row></table></document>")
+        validate(root, self.real_schema())
+        self.assertGreaterEqual(len(docx_reader.warnings), 2)
+
+
 if __name__ == "__main__":
     unittest.main()

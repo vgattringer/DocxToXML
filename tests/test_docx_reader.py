@@ -55,6 +55,26 @@ class HeadingLevelTest(unittest.TestCase):
         p.add_run(" normal text")
         self.assertIsNone(heading_level(p))
 
+    def test_heuristic_warning_text(self) -> None:
+        p = self.doc.add_paragraph()
+        p.add_run("Title").bold = True
+        heading_level(p)
+        self.assertIn("'Title'", docx_reader.warnings[0])
+
+    def test_heuristic_boundary_79_chars(self) -> None:
+        p = self.doc.add_paragraph()
+        p.add_run("x" * 79).bold = True
+        self.assertEqual(heading_level(p), 2)
+
+    def test_empty_paragraph(self) -> None:
+        self.assertIsNone(heading_level(self.doc.add_paragraph()))
+
+    def test_whitespace_run_does_not_break_heuristic(self) -> None:
+        p = self.doc.add_paragraph()
+        p.add_run("bold").bold = True
+        p.add_run("   ")
+        self.assertEqual(heading_level(p), 2)
+
     def test_normal_paragraph(self) -> None:
         self.assertIsNone(heading_level(self.doc.add_paragraph("Text")))
         self.assertEqual(docx_reader.warnings, [])
@@ -65,7 +85,10 @@ class ListTagForTest(unittest.TestCase):
         self.assertEqual(list_tag_for("List Bullet"), "ul")
         self.assertEqual(list_tag_for("List Bullet 2"), "ul")
         self.assertEqual(list_tag_for("List Number"), "ol")
+        self.assertEqual(list_tag_for("List Number 2"), "ol")
         self.assertIsNone(list_tag_for("Normal"))
+        self.assertIsNone(list_tag_for(""))
+        self.assertIsNone(list_tag_for("List Paragraph"))
 
 
 if __name__ == "__main__":
