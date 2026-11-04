@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+  <!-- TODO Hyperlinks: neues Inline-Element <a href="..."> (xs:anyURI, Pflicht) in die
+       Auswahl unten aufnehmen, z. B. als Erweiterung von "inline" (Formatierung im Linktext
+       bleibt erlaubt). Offen: Dürfen Links verschachtelt sein? Interne Anker (#...) ausgeben? -->
+
   <!-- Fließtext mit optionaler Auszeichnung -->
   <xs:complexType name="inline" mixed="true">
     <xs:choice minOccurs="0" maxOccurs="unbounded">

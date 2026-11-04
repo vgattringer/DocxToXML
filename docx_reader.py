@@ -30,6 +30,8 @@ def style_heading_level(style: str) -> int | None:
 def heuristic_heading_level(paragraph: Paragraph) -> int | None:
     """Letzter Ausweg: erkennt Pseudo-Überschriften an Fettdruck, Länge und Satzende."""
     text = paragraph.text.strip()
+    # TODO Hyperlinks: paragraph.runs übergeht Runs in Hyperlinks, ein fetter Absatz mit Link
+    #  wird dadurch evtl. falsch (oder gar nicht) als Überschrift erkannt.
     runs = [r for r in paragraph.runs if r.text.strip()]
     # Heuristik: kurzer, komplett fetter Absatz ohne Satzende = Überschrift
     if runs and all(r.bold for r in runs) and len(text) < 80 and not text.endswith("."):

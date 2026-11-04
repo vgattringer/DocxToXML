@@ -28,6 +28,11 @@ def format_tags(run: Run) -> list[str]:
 
 def fill_inline(parent: etree._Element, paragraph: Paragraph, plain: bool = False) -> None:
     """Überträgt Runs als Text bzw. verschachtelte Formatierungs-Tags. plain=True: nur Text (z. B. Titel)."""
+    # TODO Hyperlinks: paragraph.runs enthält keine Runs aus <w:hyperlink>, deren Text geht verloren.
+    #  Besser über paragraph.iter_inner_content() iterieren (liefert Run und Hyperlink).
+    #  Bei Hyperlink: <a href=item.url> um item.runs legen (Formatierung bleibt erhalten);
+    #  bei plain=True oder ohne URL nur den Text übernehmen. Den Schleifenkörper dafür
+    #  in append_run / append_hyperlink auslagern.
     for run in paragraph.runs:
         if not run.text:
             continue

@@ -35,6 +35,9 @@ class DocxConverter:
             self.current_list = None
             append_table(self.container, block)
             return
+        # TODO Hyperlinks: block.text enthält den Linktext, fill_inline (xml_builder) bisher nicht.
+        #  Ein Absatz nur aus einem Link ergibt deshalb ein leeres <p/>. Löst sich, sobald
+        #  fill_inline Hyperlinks übernimmt.
         if not block.text.strip():
             return  # leere Absätze ignorieren
         # Priorität: ausdrückliche Vorlage vor Heuristik
