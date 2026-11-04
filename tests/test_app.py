@@ -32,6 +32,11 @@ class MainTest(unittest.TestCase):
             main(["app.py", *args])
         return buffer.getvalue()
 
+    def assert_output_is_valid(self) -> None:
+        schema = etree.XMLSchema(etree.parse(SCHEMA))
+        doc = etree.parse(self.output)
+        self.assertTrue(schema.validate(doc), schema.error_log)
+
     def test_too_few_arguments_exits(self) -> None:
         with self.assertRaises(SystemExit):
             main(["app.py", self.input])
@@ -51,16 +56,20 @@ class MainTest(unittest.TestCase):
     def test_validates_with_schema(self) -> None:
         out = self.run_main(self.input, self.output, SCHEMA)
         self.assertIn("schema-valide: True", out)
+        self.assert_output_is_valid()
 
     def test_prints_warnings(self) -> None:
         out = self.run_main(self.input, self.output)
         self.assertIn("WARNUNG:", out)
         self.assertIn("Quote", out)
 
-    def test_sample_document_is_schema_valid(self) -> None:
-        sample = os.path.join(ROOT, "input", "test.docx")
-        out = self.run_main(sample, self.output, SCHEMA)
-        self.assertIn("schema-valide: True", out)
+    def test_sample_documents_are_schema_valid(self) -> None:
+        for name in ("test.docx", "test2.docx"):
+            with self.subTest(name):
+                sample = os.path.join(ROOT, "input", name)
+                out = self.run_main(sample, self.output, SCHEMA)
+                self.assertIn("schema-valide: True", out)
+                self.assert_output_is_valid()
 
 
 if __name__ == "__main__":
