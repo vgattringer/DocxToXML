@@ -7,7 +7,7 @@ import docx_reader
 from docx_converter import DocxConverter
 
 
-def xml(el: etree._Element) -> str:
+def xml_to_string(el: etree._Element) -> str:
     return etree.tostring(el, encoding="unicode")
 
 
@@ -17,7 +17,7 @@ class DocxConverterTest(unittest.TestCase):
         self.doc = Document()
 
     def convert(self) -> str:
-        return xml(DocxConverter().convert(self.doc))
+        return xml_to_string(DocxConverter().convert(self.doc))
 
     def test_empty_document(self) -> None:
         self.assertEqual(self.convert(), "<document/>")
