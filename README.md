@@ -1,6 +1,7 @@
 # Docx → XML
 
-Wandelt Word-Dokumente (`.docx`) in medienneutrales XML um. Es handelt sich hier um einen Prototyp.
+Wandelt Word-Dokumente (`.docx`) in medienneutrales XML um. Es handelt sich hier um einen Prototyp. 
+_Work in progress..._
 
 ## Voraussetzungen
 
@@ -23,7 +24,7 @@ python -m venv .venv
 New-Item -ItemType Directory -Force input, output
 ```
 
-## DANACH: So erstellst du die XML-Dateien
+## So erstellst du die XML-Dateien
 
 1. Lege die Word-Dateien in den Ordner **`input`** (im Projektordner). Schließe sie vorher in Word, sonst entstehen Temp-Dateien (`~$*.docx`), die die Umwandlung stören.
 2. Öffne PowerShell im Projektordner.
@@ -73,12 +74,17 @@ Im Terminal erscheint am Ende `schema-valide: True/False` sowie **WARNUNG**-Zeil
 | `xml_builder.py` | Überträgt Text, Formatierung und Tabellen |
 | `xml_validator.py` | Prüft das Ergebnis gegen `schema.xsd` |
 
-Regeln:
+**Regeln:**
 
-- **Überschriften** (`Heading 1–n`, `Title`) werden zu verschachtelten `<section>` mit `<title>`. Die Ebene bestimmt die Verschachtelung.
-- **Heuristik:** Ein kurzer (< 80 Zeichen), komplett fetter Absatz ohne Punkt am Ende gilt als Überschrift Ebene 2 (mit Warnung).
-- **Listen** (`List Bullet…` / `List Number…`) werden zu `<ul>` / `<ol>` mit `<li>`; aufeinanderfolgende Einträge landen in derselben Liste.
-- **Alles andere** wird `<p>`. Unbekannte Formatvorlagen (z. B. `Quote`) werden als `<p>` übernommen, mit Warnung.
+Jeder nicht leere Absatz wird in dieser Reihenfolge geprüft, die erste zutreffende Regel gilt. Eine ausdrückliche Formatvorlage hat also Vorrang vor der Heuristik.
+
+1. **Überschriften** (`Heading 1–n`, `Title`) werden zu verschachtelten `<section>` mit `<title>`. Die Ebene bestimmt die Verschachtelung (`Title` = Ebene 1).
+2. **Listen** (`List Bullet…` / `List Number…`) werden zu `<ul>` / `<ol>` mit `<li>`; aufeinanderfolgende Einträge landen in derselben Liste. Auch ein komplett fetter, kurzer Listeneintrag bleibt ein Listeneintrag.
+3. **Heuristik:** Ein kurzer (< 80 Zeichen), komplett fetter Absatz ohne Punkt am Ende gilt als Überschrift Ebene 2 (mit Warnung). Sie greift nur, wenn Regel 1 und 2 nicht zutreffen.
+4. **Alles andere** wird `<p>`. Unbekannte Formatvorlagen (z. B. `Quote`) werden als `<p>` übernommen, mit Warnung.
+
+**Weitere Regeln:**
+
 - **Formatierung** (fett, kursiv, unterstrichen, durchgestrichen, hoch-/tiefgestellt) wird zu `<b>`, `<i>`, `<u>`, `<s>`, `<sup>`, `<sub>`.
 - **Tabellen** werden zu `<table>/<row>/<entry>`; die erste Zeile ist `header="true"`. Pro Zelle wird nur der erste Absatz übernommen.
 - **Leere Absätze** werden ignoriert.
