@@ -18,13 +18,17 @@ def iter_blocks(doc: DocxDocument) -> Iterator[Paragraph | Table]:
             yield Table(child, doc)
 
 
-def heading_level(paragraph: Paragraph) -> int | None:
-    """Ermittelt die Überschriftenebene: erst über Formatvorlage, dann Heuristik."""
-    style = paragraph.style.name or ""
+def style_heading_level(style: str) -> int | None:
+    """Ermittelt die Überschriftenebene allein aus der Formatvorlage (None = keine)."""
     if style.startswith("Heading "):
         return int(style.split()[-1])
     if style == "Title":
         return 1
+    return None
+
+
+def heuristic_heading_level(paragraph: Paragraph) -> int | None:
+    """Letzter Ausweg: erkennt Pseudo-Überschriften an Fettdruck, Länge und Satzende."""
     text = paragraph.text.strip()
     runs = [r for r in paragraph.runs if r.text.strip()]
     # Heuristik: kurzer, komplett fetter Absatz ohne Satzende = Überschrift

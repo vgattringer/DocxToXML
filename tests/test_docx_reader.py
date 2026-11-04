@@ -5,7 +5,8 @@ from docx.table import Table
 from docx.text.paragraph import Paragraph
 
 import docx_reader
-from docx_reader import heading_level, iter_blocks, list_tag_for
+from docx_reader import (heuristic_heading_level, iter_blocks, list_tag_for,
+                         style_heading_level)
 
 
 class IterBlocksTest(unittest.TestCase):
@@ -28,55 +29,65 @@ class HeadingLevelTest(unittest.TestCase):
         self.doc = Document()
 
     def test_heading_style(self) -> None:
-        self.assertEqual(heading_level(self.doc.add_heading("A", 3)), 3)
+        self.assertEqual(style_heading_level("Heading 3"), 3)
 
     def test_title_is_level_1(self) -> None:
-        self.assertEqual(heading_level(self.doc.add_heading("A", 0)), 1)
+        self.assertEqual(style_heading_level("Title"), 1)
+
+    def test_other_styles_have_no_style_level(self) -> None:
+        for style in ("Normal", "List Bullet", "Quote", ""):
+            self.assertIsNone(style_heading_level(style))
+
+    def test_style_level_ignores_bold_text(self) -> None:
+        p = self.doc.add_paragraph()
+        p.add_run("Short and bold").bold = True
+        self.assertIsNone(style_heading_level(p.style.name))
+        self.assertEqual(docx_reader.warnings, [])
 
     def test_heuristic_short_bold_paragraph(self) -> None:
         p = self.doc.add_paragraph()
         p.add_run("Short and bold").bold = True
-        self.assertEqual(heading_level(p), 2)
+        self.assertEqual(heuristic_heading_level(p), 2)
         self.assertEqual(len(docx_reader.warnings), 1)
 
     def test_heuristic_not_applied_with_sentence_end(self) -> None:
         p = self.doc.add_paragraph()
         p.add_run("A sentence.").bold = True
-        self.assertIsNone(heading_level(p))
+        self.assertIsNone(heuristic_heading_level(p))
 
     def test_heuristic_not_applied_to_long_text(self) -> None:
         p = self.doc.add_paragraph()
         p.add_run("x" * 80).bold = True
-        self.assertIsNone(heading_level(p))
+        self.assertIsNone(heuristic_heading_level(p))
 
     def test_heuristic_not_applied_when_partly_bold(self) -> None:
         p = self.doc.add_paragraph()
         p.add_run("bold").bold = True
         p.add_run(" normal text")
-        self.assertIsNone(heading_level(p))
+        self.assertIsNone(heuristic_heading_level(p))
 
     def test_heuristic_warning_text(self) -> None:
         p = self.doc.add_paragraph()
         p.add_run("Title").bold = True
-        heading_level(p)
+        heuristic_heading_level(p)
         self.assertIn("'Title'", docx_reader.warnings[0])
 
     def test_heuristic_boundary_79_chars(self) -> None:
         p = self.doc.add_paragraph()
         p.add_run("x" * 79).bold = True
-        self.assertEqual(heading_level(p), 2)
+        self.assertEqual(heuristic_heading_level(p), 2)
 
     def test_empty_paragraph(self) -> None:
-        self.assertIsNone(heading_level(self.doc.add_paragraph()))
+        self.assertIsNone(heuristic_heading_level(self.doc.add_paragraph()))
 
     def test_whitespace_run_does_not_break_heuristic(self) -> None:
         p = self.doc.add_paragraph()
         p.add_run("bold").bold = True
         p.add_run("   ")
-        self.assertEqual(heading_level(p), 2)
+        self.assertEqual(heuristic_heading_level(p), 2)
 
     def test_normal_paragraph(self) -> None:
-        self.assertIsNone(heading_level(self.doc.add_paragraph("Text")))
+        self.assertIsNone(heuristic_heading_level(self.doc.add_paragraph("Text")))
         self.assertEqual(docx_reader.warnings, [])
 
 

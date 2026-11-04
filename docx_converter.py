@@ -4,7 +4,8 @@ from docx.table import Table
 from docx.text.paragraph import Paragraph
 from lxml import etree
 
-from docx_reader import heading_level, iter_blocks, list_tag_for, warnings
+from docx_reader import (heuristic_heading_level, iter_blocks, list_tag_for,
+                         style_heading_level, warnings)
 from xml_builder import append_table, fill_inline
 
 
@@ -36,16 +37,16 @@ class DocxConverter:
             return
         if not block.text.strip():
             return  # leere Absätze ignorieren
-        level = heading_level(block)
-        if level:
-            self.handle_heading(block, level)
-            return
+        # Priorität: ausdrückliche Vorlage vor Heuristik
         style = block.style.name or ""
-        list_tag = list_tag_for(style)
-        if list_tag:
+        if level := style_heading_level(style):
+            self.handle_heading(block, level)
+        elif list_tag := list_tag_for(style):
             self.handle_list_item(block, list_tag)
-            return
-        self.handle_paragraph(block, style)
+        elif level := heuristic_heading_level(block):
+            self.handle_heading(block, level)
+        else:
+            self.handle_paragraph(block, style)
 
     def handle_heading(self, block: Paragraph, level: int) -> None:
         self.current_list = None

@@ -165,6 +165,54 @@ class DocxConverterTest(unittest.TestCase):
         self.assertEqual(
             self.convert(),
             "<document><section><title>Looks like heading</title></section></document>")
+        self.assertEqual(len(docx_reader.warnings), 1)
+        self.assertIn("Heuristik", docx_reader.warnings[0])
+
+    def test_bold_list_item_stays_list_item(self) -> None:
+        self.doc.add_paragraph("a", style="List Bullet").runs[0].bold = True
+        self.assertEqual(
+            self.convert(), "<document><ul><li><b>a</b></li></ul></document>")
+        self.assertEqual(docx_reader.warnings, [])
+
+    def test_heading_style_beats_list_continuation(self) -> None:
+        self.doc.add_paragraph("a", style="List Bullet")
+        self.doc.add_heading("H", 1).runs[0].bold = True
+        self.assertEqual(
+            self.convert(),
+            "<document><ul><li>a</li></ul><section><title>H</title></section></document>")
+        self.assertEqual(docx_reader.warnings, [])
+
+    def test_title_style_is_level_1_section(self) -> None:
+        self.doc.add_paragraph("T", style="Title")
+        self.doc.add_paragraph("x")
+        self.assertEqual(
+            self.convert(), "<document><section><title>T</title><p>x</p></section></document>")
+
+    def test_bold_text_with_sentence_end_stays_paragraph(self) -> None:
+        self.doc.add_paragraph().add_run("Fett mit Punkt.").bold = True
+        self.assertEqual(self.convert(), "<document><p><b>Fett mit Punkt.</b></p></document>")
+        self.assertEqual(docx_reader.warnings, [])
+
+    def test_empty_heading_is_ignored(self) -> None:
+        self.doc.add_heading("", 1)
+        self.doc.add_paragraph("x")
+        self.assertEqual(self.convert(), "<document><p>x</p></document>")
+
+    def test_nested_list_style_gives_list(self) -> None:
+        self.doc.add_paragraph("a", style="List Bullet 2")
+        self.assertEqual(self.convert(), "<document><ul><li>a</li></ul></document>")
+
+    def test_table_without_section_goes_into_root(self) -> None:
+        self.doc.add_table(rows=1, cols=1)
+        self.assertEqual(
+            self.convert(),
+            '<document><table><row header="true"><entry/></row></table></document>')
+
+    def test_warnings_accumulate(self) -> None:
+        self.doc.add_paragraph("a", style="Quote")
+        self.doc.add_paragraph("b", style="Intense Quote")
+        self.convert()
+        self.assertEqual(len(docx_reader.warnings), 2)
 
 
 if __name__ == "__main__":
