@@ -193,6 +193,12 @@ class DocxConverterTest(unittest.TestCase):
         self.assertEqual(self.convert(), "<document><p><b>Fett mit Punkt.</b></p></document>")
         self.assertEqual(docx_reader.warnings, [])
 
+    def test_long_bold_text_stays_paragraph(self) -> None:
+        text = "x" * 80
+        self.doc.add_paragraph().add_run(text).bold = True
+        self.assertEqual(self.convert(), f"<document><p><b>{text}</b></p></document>")
+        self.assertEqual(docx_reader.warnings, [])
+
     def test_empty_heading_is_ignored(self) -> None:
         self.doc.add_heading("", 1)
         self.doc.add_paragraph("x")
