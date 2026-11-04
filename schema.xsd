@@ -23,6 +23,8 @@
     </xs:sequence>
   </xs:complexType>
 
+  <!-- TODO Verbundene Zellen: "entry" braucht ein optionales Attribut colspan (xs:positiveInteger),
+       z. B. über einen Typ "cell" als Erweiterung von "inline". -->
   <xs:complexType name="table">
     <xs:sequence>
       <xs:element name="row" maxOccurs="unbounded">

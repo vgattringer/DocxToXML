@@ -52,6 +52,11 @@ def append_table(container: etree._Element, table: Table) -> None:
         row_el = etree.SubElement(table_el, "row")
         if i == 0:
             row_el.set("header", "true")
+        # TODO Verbundene Zellen: row.cells liefert ein Raster, verbundene Zellen kommen mehrfach vor
+        #  (horizontal: gleiche Zelle in einer Zeile, vertikal: obere Zelle in den Folgezeilen).
+        #  Der Text erscheint dadurch doppelt. Besser über row._tr.tc_lst iterieren (echte Zellen,
+        #  intern in python-docx): grid_span > 1 -> entry.set("colspan", ...), vMerge == "continue"
+        #  -> leerer <entry/>. rowspan nur bei Bedarf (Spaltenposition mitführen).
         for cell in row.cells:
             entry = etree.SubElement(row_el, "entry")
             # Pro Zelle nur der Text des ersten Absatzes (bewusste Vereinfachung)
